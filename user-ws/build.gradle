@@ -1,0 +1,11 @@
+//bootJar {
+//    enabled = true
+//}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+// https://mvnrepository.com/artifact/net.ttddyy/datasource-proxy
+    implementation group: 'net.ttddyy', name: 'datasource-proxy', version: '1.10'
+
+}

@@ -1,0 +1,3 @@
+rootProject.name = 'spring-boot-microservices'
+
+include 'order-ws', 'user-ws', 'inventory-ws'
