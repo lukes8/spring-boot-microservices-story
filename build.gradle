@@ -50,11 +50,15 @@ subprojects {
 
         // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
         implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     }
 
     dependencyManagement {
         imports {
             mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.0'
+            mavenBom("io.github.resilience4j:resilience4j-bom:2.1.0")
         }
     }
 

@@ -11,11 +11,12 @@ import java.util.stream.Stream;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-//    @Query("SELECT u FROM mysql_story.User")
-//    Stream<User> streamAll();
+    @Query("SELECT u FROM USERS u")
+    Stream<User> streamAll();
 
-//    @Query("SELECT u FROM User u")
-//    List<User> findAll();
+
+    @Query("SELECT u FROM USERS u")
+    List<User> findAll();
 
     //@QueryHints(
     //        @QueryHint(name = AvailableHints.HINT_FETCH_SIZE, value = "25")

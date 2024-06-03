@@ -113,18 +113,18 @@ public class UserService {
         int batchSize = 20;
         int count = 0;
 
-//        try (Stream<User> userStream = userRepository.streamAll()) {
-//            for (User user : (Iterable<User>)userStream::iterator) {
-//                //process
-//                entityManager.detach(user);
-//                count++;
-//                if (count % batchSize == 0) {
-//                    //we dont need to call flush() in case we dont modify database data and hence no sync with database is needed for persistence context
-//                    entityManager.clear();
-//                }
-//            }
-//            entityManager.clear();
-//        }
+        try (Stream<User> userStream = userRepository.streamAll()) {
+            for (User user : (Iterable<User>)userStream::iterator) {
+                //process
+                entityManager.detach(user);
+                count++;
+                if (count % batchSize == 0) {
+                    //we dont need to call flush() in case we dont modify database data and hence no sync with database is needed for persistence context
+                    entityManager.clear();
+                }
+            }
+            entityManager.clear();
+        }
     }
 
     public void downloadUsers() throws IOException {

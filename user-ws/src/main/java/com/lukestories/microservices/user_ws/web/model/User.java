@@ -7,9 +7,16 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "USERS") @Builder @NoArgsConstructor @AllArgsConstructor @Data @EqualsAndHashCode @ToString
+@Entity(name = "USERS")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@EqualsAndHashCode
+@ToString
 public class User {
-    @Id @Column(name = "ID")
+    @Id
+    @Column(name = "ID")
     private Long id;
     @Column(name = "USERNAME")
     private String username;

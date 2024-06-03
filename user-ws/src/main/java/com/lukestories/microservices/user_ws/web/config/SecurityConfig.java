@@ -69,6 +69,26 @@ public class SecurityConfig {
             public String getUsername() {
                 return "test";
             }
+
+            @Override
+            public boolean isAccountNonExpired() {
+                return true;
+            }
+
+            @Override
+            public boolean isAccountNonLocked() {
+                return true;
+            }
+
+            @Override
+            public boolean isCredentialsNonExpired() {
+                return true;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
         }).build();
         return new InMemoryUserDetailsManager(userDetails);
     }

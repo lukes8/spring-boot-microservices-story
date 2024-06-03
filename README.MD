@@ -7,4 +7,12 @@ So feel free to use it and enjoy! :)
 ### Commands
 ```
 todo
+
+#management.endpoints.web.exposure.include=health,beans,mappings,httpexchanges
+
+Actuator end points
+http://localhost:${PORT}/actuator
+http://localhost:${PORT}/actuator/health
+http://localhost:${PORT}/actuator/circuitbreakerevents
+
 ```

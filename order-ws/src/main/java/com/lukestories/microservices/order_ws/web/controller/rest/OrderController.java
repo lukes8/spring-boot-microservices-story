@@ -28,6 +28,11 @@ public class OrderController {
         return order;
     }
 
+    @GetMapping(value = "/get-inventory/{productId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public Integer getInventory4Product(@PathVariable Long productId) {
+        return orderService.getInventory4Product(productId);
+    }
+
 //    @PostMapping
 //    public String create(@RequestParam(defaultValue = "-1") Long orderId,
 //                         @RequestParam String productName,

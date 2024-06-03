@@ -12,7 +12,6 @@ import feign.FeignException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -39,6 +38,10 @@ public class OrderService {
     public Order get(Long orderId) {
         Optional<Order> byId = orderRepository.findById(orderId);
         return byId.get();
+    }
+
+    public Integer getInventory4Product(Long productId) {
+        return inventoryServiceClient.getInventory4Product(productId);
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)

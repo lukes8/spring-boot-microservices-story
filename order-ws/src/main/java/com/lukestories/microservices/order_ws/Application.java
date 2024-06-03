@@ -7,7 +7,10 @@ import com.lukestories.microservices.order_ws.web.repository.StatusRepository;
 import feign.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationListener;
@@ -21,11 +24,13 @@ import java.util.Set;
 
 @SpringBootApplication
 @EnableFeignClients
+@EnableDiscoveryClient
 public class Application implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private StatusRepository statusRepository;
-    @Autowired private DiscountVoucherRepository voucherRepository;
+    @Autowired
+    private DiscountVoucherRepository voucherRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -46,5 +51,10 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
     @Bean
     Logger.Level feignLoggerLover() {
         return Logger.Level.FULL;
+    }
+
+    @Bean
+    public HttpExchangeRepository httpTraceRepository() {
+        return new InMemoryHttpExchangeRepository();
     }
 }
