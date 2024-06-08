@@ -2,7 +2,7 @@ package com.lukestories.microservices.user_ws.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lukestories.microservices.user_ws.web.model.dto.UserDto;
-import com.lukestories.microservices.user_ws.web.service.UserService;
+import com.lukestories.microservices.user_ws.web.service.impl.UserServiceImpl;
 import com.lukestories.microservices.user_ws.web.util.FileUtil;
 import com.lukestories.microservices.user_ws.web.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 
 @RestController
@@ -20,10 +19,10 @@ import java.nio.file.Path;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @GetMapping("/{userId}")
-    public UserDto get(@PathVariable Long userId) {
+    public UserDto get(@PathVariable Long userId) throws Exception {
         UserDto user = userService.get(userId);
         return user;
     }

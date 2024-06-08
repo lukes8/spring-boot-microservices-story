@@ -18,6 +18,7 @@ public class OrderController {
 
     @GetMapping("/status/check")
     public String status() {
+
         return "green world";
     }
 
@@ -47,6 +48,7 @@ public class OrderController {
         try {
             created = orderService.processAndCreateOrder(orderItem);
         } catch (Exception e) {
+            log.error("Custom exception in create(). Details: {}", e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
         return ResponseEntity.ok(created);
