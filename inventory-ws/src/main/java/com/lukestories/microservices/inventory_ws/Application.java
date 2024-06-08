@@ -19,6 +19,7 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
     private InventoryRepository inventoryRepository;
 
     public static void main(String[] args) {
+
         SpringApplication.run(Application.class, args);
     }
 

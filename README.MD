@@ -16,3 +16,9 @@ http://localhost:${PORT}/actuator/health
 http://localhost:${PORT}/actuator/circuitbreakerevents
 
 ```
+
+### Todo
+```
+- 403 forbidden with filters users API
+
+```

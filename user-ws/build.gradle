@@ -9,5 +9,11 @@ dependencies {
     implementation group: 'net.ttddyy', name: 'datasource-proxy', version: '1.10'
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client'
+// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.5'
+// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.5'
+// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.5'
 
 }

@@ -1,28 +1,26 @@
 package com.lukestories.microservices.user_ws.web.config;
 
+import com.lukestories.microservices.user_ws.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -32,70 +30,41 @@ public class SecurityConfig {
 
     @Autowired
     private Environment environment;
+    @Autowired
+    private UserService userService;
+
+    @Autowired private BCryptPasswordEncoder encoder;
+
+    @Autowired private CustomLoggingFilter customLoggingFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(encoder);
+
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, environment);
+        authFilter.setFilterProcessesUrl("/login");
+
+        JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(environment);
+
+
         log.info("User name and password: {} : {}", environment.getProperty("test.user.username"), environment.getProperty("test.user.password"));
-        http.httpBasic(Customizer.withDefaults())
-                .authorizeHttpRequests(
-                        r -> r
-//                                .anyRequest().permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                .anyRequest().authenticated()
-                );
-        http.csrf(c -> c.disable())
-                .headers(c -> c.frameOptions(f -> f.disable()));
-        http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/login").permitAll())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+//                .addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilter(authFilter)
+                .authenticationManager(authenticationManager)
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
         return http.build();
     }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withUserDetails(new UserDetails() {
-            List<GrantedAuthority> lst = AuthorityUtils.createAuthorityList("USER");
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return lst;
-            }
-
-            @Override
-            public String getPassword() {
-                return new BCryptPasswordEncoder().encode("test");
-            }
-
-            @Override
-            public String getUsername() {
-                return "test";
-            }
-
-            @Override
-            public boolean isAccountNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isAccountNonLocked() {
-                return true;
-            }
-
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        }).build();
-        return new InMemoryUserDetailsManager(userDetails);
-    }
-
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }
