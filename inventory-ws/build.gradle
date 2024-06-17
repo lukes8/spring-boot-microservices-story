@@ -1,5 +1,10 @@
 dependencies {
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client'
-
+// https://mvnrepository.com/artifact/io.micrometer/micrometer-observation
+    implementation group: 'io.micrometer', name: 'micrometer-observation'
+// https://mvnrepository.com/artifact/io.micrometer/micrometer-tracing-bridge-brave
+    implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave'
+// https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave
+    implementation group: 'io.zipkin.reporter2', name: 'zipkin-reporter-brave'
 }

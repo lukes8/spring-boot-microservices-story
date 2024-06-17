@@ -53,6 +53,7 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
         return Logger.Level.FULL;
     }
 
+    //metrics on url http://localhost:${PORT}/actuator/httpexchanges
     @Bean
     public HttpExchangeRepository httpTraceRepository() {
         return new InMemoryHttpExchangeRepository();

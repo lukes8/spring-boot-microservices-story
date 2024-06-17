@@ -4,4 +4,14 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("io.github.resilience4j:resilience4j-spring-boot3")
+
+    // https://mvnrepository.com/artifact/io.micrometer/micrometer-observation
+    implementation group: 'io.micrometer', name: 'micrometer-observation'
+// https://mvnrepository.com/artifact/io.micrometer/micrometer-tracing-bridge-brave
+    implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave'
+// https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave
+    implementation group: 'io.zipkin.reporter2', name: 'zipkin-reporter-brave'
+// https://mvnrepository.com/artifact/io.github.openfeign/feign-micrometer
+    testImplementation group: 'io.github.openfeign', name: 'feign-micrometer'
+
 }

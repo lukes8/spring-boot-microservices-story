@@ -14,11 +14,23 @@ Actuator end points
 http://localhost:${PORT}/actuator
 http://localhost:${PORT}/actuator/health
 http://localhost:${PORT}/actuator/circuitbreakerevents
+http://localhost:${PORT}/actuator/httpexchanges
+
+Micrometer tracing metrics examples (micrometer has glue code for actuator)
+http://localhost:${PORT}/actuator/metrics/hikaricp.connections.active
+```
+
+### Useful links
+```
+Axon framework architecture diagram, CQRS, event sourcing 
+https://docs.axoniq.io/reference-guide/architecture-overview
 
 ```
 
-### Todo
+### Issues
 ```
 - 403 forbidden with filters users API
+- Zipkin trace id propagation not work within inventory  
 
 ```
+

@@ -1,6 +1,6 @@
 package com.lukestories.microservices.user_ws.web.service.impl;
 
-import com.lukestories.microservices.user_ws.web.model.User;
+import com.lukestories.microservices.user_ws.web.model.UserEntity;
 import com.lukestories.microservices.user_ws.web.model.dto.UserDto;
 import com.lukestories.microservices.user_ws.web.repository.UserRepository;
 import com.lukestories.microservices.user_ws.web.service.UserService;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto get(Long id) throws Exception {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new Exception(ERROR_CODE_NOT_FOUND));
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new Exception(ERROR_CODE_NOT_FOUND));
         UserDto build = modelMapper.map(user, UserDto.class);//
 //        UserDto build = UserDto.builder().id(id).password("test").username("luke").build();
         return build;
@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
     public UserDto signUp(UserDto user) {
 
         user.setPassword(encoder.encode(user.getPassword()));
-        User map = modelMapper.map(user, User.class);
+        UserEntity map = modelMapper.map(user, UserEntity.class);
         map.setLastLoginDateTime(LocalDateTime.now());
         map.setId(null);
-        User saved = userRepository.save(map);
+        UserEntity saved = userRepository.save(map);
         UserDto returned = modelMapper.map(saved, UserDto.class);
         returned.setPassword(null);
         return returned;
@@ -99,11 +99,11 @@ public class UserServiceImpl implements UserService {
         int batchSize = 20; // Adjust batch size as needed
         int pageNumber = 0;
 
-        List<User> users;
+        List<UserEntity> users;
         do {
             val page = PageRequest.of(pageNumber, batchSize);
             users = userRepository.findAll(page).getContent();
-            for (User u : users) {
+            for (UserEntity u : users) {
                 //process
                 entityManager.detach(u);
             }
@@ -117,8 +117,8 @@ public class UserServiceImpl implements UserService {
         int batchSize = 20;
         int count = 0;
 
-        try (Stream<User> userStream = userRepository.streamAll()) {
-            for (User user : (Iterable<User>)userStream::iterator) {
+        try (Stream<UserEntity> userStream = userRepository.streamAll()) {
+            for (UserEntity user : (Iterable<UserEntity>)userStream::iterator) {
                 //process
                 entityManager.detach(user);
                 count++;
@@ -147,8 +147,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("loadUserByUsername username {}", username);
-        User user = userRepository.findByUsername(username).get();
-        user.setEncryptedPassword(encoder.encode("test"));
+        UserEntity user = userRepository.findByUsername(username).get();
         log.debug("user username {} ", user.getUsername());
         log.debug("user password: {}", user.getEncryptedPassword());
 //        return org.springframework.security.core.userdetails.User.builder()

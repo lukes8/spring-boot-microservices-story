@@ -18,13 +18,16 @@ public class OrderController {
 
     @GetMapping("/status/check")
     public String status() {
-
         return "green world";
+    }
+
+    @GetMapping("/status/check2")
+    public String status2() {
+        return "green world2";
     }
 
     @GetMapping(value = "/{orderId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Order get(@PathVariable Long orderId) {
-        log.info("order {}", orderId);
         Order order = orderService.get(orderId);
         return order;
     }

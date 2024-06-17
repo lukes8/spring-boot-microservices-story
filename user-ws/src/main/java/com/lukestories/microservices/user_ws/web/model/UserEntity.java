@@ -3,7 +3,9 @@ package com.lukestories.microservices.user_ws.web.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Entity(name = "USERS")
 @Builder
@@ -11,7 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode
-public class User {
+public class UserEntity {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +27,9 @@ public class User {
     private Boolean active;
     @Column(name = "LAST_LOGIN_DATE_TIME")
     private LocalDateTime lastLoginDateTime;
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+                                    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<RoleEntity> roles;
 }

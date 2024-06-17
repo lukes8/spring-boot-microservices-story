@@ -1,81 +1,86 @@
 server:
-    port: ${PORT:8081}
+  port: ${PORT:8081}
 spring:
-    application:
-        name: order-ws
-    datasource:
-        driver-class-name: org.h2.Driver
-        password: ''
-        url: jdbc:h2:mem:testdb
-        username: sa
-    devtools:
-        restart:
-            enabled: true
-    h2:
-        console:
-            enabled: true
-    jpa:
-        database-platform: org.hibernate.dialect.H2Dialect
-        hibernate:
-            ddl-auto: update
-        show-sql: true
+  application:
+    name: order-ws
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: ''
+    url: jdbc:h2:mem:testdb
+    username: sa
+  devtools:
+    restart:
+      enabled: true
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 
 eureka:
-    client:
-        serviceUrl:
-            defaultZone: http://localhost:${EUREKA_PORT:8010}/eureka
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA_PORT:8010}/eureka
+
+# variables read from MDC (Mapped Diagnostic Context), traceId and spanId are stored automatically, we just need to use them
+#      console: [${spring.application.name}, ${traceId:-}, ${spanId:-}]
+
 logging:
-    level:
-        com:
-            lukestories:
-                microservices:
-                    order_ws:
-                        web:
-                            client:
-                                InventoryServiceClient: DEBUG
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [${spring.application.name}, test %X{traceId:-}, test %X{spanId:-}]"
+
 management:
-    endpoint:
-        health:
-            enabled: true
-            show-details: always
-    endpoints:
-        web:
-            exposure:
-                include: '*'
+  endpoint:
     health:
-        circuitbreakers:
-            enabled: true
+      enabled: true
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    circuitbreakers:
+      enabled: true
+  # set tracing info for 100% coverage of requests just for testing purpose
+  tracing:
+    sampling:
+      probability: 1
 
 resilience4j:
-    circuitbreaker:
-        circuit-breaker-aspect-order: 1
-        configs:
-            default:
-                automaticTransitionFromOpenToHalfOpenEnabled: true
-                eventConsumerBufferSize: 10
-                failureRateThreshold: 50
-                minimumNumberOfCalls: 1
-                registerHealthIndicator: true
-                slidingWindowSize: 2
-                slidingWindowType: COUNT_BASED
-                waitDurationInOpenState: 10s
-        instances:
-            inventory-ws:
-                registerHealthIndicator: true
-                slidingWindowSize: 10
-                failureRateThreshold: 50
-                waitDurationInOpenState: 10000
-                permittedNumberOfCallsInHalfOpenState: 3
-                slidingWindowType: COUNT_BASED
-                minimumNumberOfCalls: 5
-                automaticTransitionFromOpenToHalfOpenEnabled: true
-    retry:
-        retry-aspect-order: 2
-        instances:
-            inventory-ws:
-                maxAttempts: 3
-                waitDuration: 2s
-                enableExponentialBackoff: true
-                exponentialBackoffMultiplier: 5
+  circuitbreaker:
+    circuit-breaker-aspect-order: 1
+    configs:
+      default:
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 1
+        registerHealthIndicator: true
+        slidingWindowSize: 2
+        slidingWindowType: COUNT_BASED
+        waitDurationInOpenState: 10s
+    instances:
+      inventory-ws:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  retry:
+    retry-aspect-order: 2
+    instances:
+      inventory-ws:
+        maxAttempts: 3
+        waitDuration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 5
 

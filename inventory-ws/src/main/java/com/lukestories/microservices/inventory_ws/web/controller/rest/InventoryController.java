@@ -17,6 +17,7 @@ public class InventoryController {
     }
     @GetMapping("/isInStock/{productId}")
     public Boolean isProductInStock(@PathVariable Long productId) throws Exception {
+        log.debug("is product in stock? Product id {}", productId);
         return inventoryService.isInStock(productId);
     }
     @PostMapping("/decreaseAmount4Product/{productId}/{amount}")
@@ -25,6 +26,7 @@ public class InventoryController {
     }
     @GetMapping("/status")
     public String status() throws Exception {
+        log.info("check status");
         return "green is good";
     }
 }

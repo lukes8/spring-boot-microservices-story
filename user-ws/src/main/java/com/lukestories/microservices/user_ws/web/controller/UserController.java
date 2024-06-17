@@ -5,17 +5,26 @@ import com.lukestories.microservices.user_ws.web.model.dto.UserDto;
 import com.lukestories.microservices.user_ws.web.service.impl.UserServiceImpl;
 import com.lukestories.microservices.user_ws.web.util.FileUtil;
 import com.lukestories.microservices.user_ws.web.util.UserUtil;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @RestController
-@RequestMapping("/rest/api/users")
+@RequestMapping("/rest/api/users") @Slf4j
 public class UserController {
 
     @Autowired

@@ -1,0 +1,24 @@
+spring.application.name: api-gateway
+server.port: ${PORT:8082}
+eureka.client.serviceUrl.defaultZone: http://localhost:${EUREKA_PORT:8010}/eureka
+
+spring.main.web-application-type: reactive
+
+#spring:
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true
+
+spring:
+  cloud:
+    gateway:
+      routes[0]:
+        id: order-status-check
+        uri: lb://order-ws:8081
+        predicates[0]: Path=/order-ws/rest/api/orders/**
+        predicates[1]: Method=GET
+        filters[0]: RewritePath=/order-ws/(?<segment>.*), /$\{segment}
+#        filters[0]: RewritePath=/user-ws/rest/api/orders/status/check,/rest/api/orders/status/check
