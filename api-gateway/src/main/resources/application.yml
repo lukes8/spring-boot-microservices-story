@@ -16,10 +16,17 @@ spring:
   cloud:
     gateway:
       routes[0]:
-        id: order-status-check
-        uri: lb://order-ws:8081
+        id: order-ws-permit-all-endpoints
+        uri: lb://order-ws
         predicates[0]: Path=/order-ws/rest/api/orders/**
-        predicates[1]: Method=GET
+        predicates[1]: Method=GET,PUT,DELETE,POST
         predicates[2]: After=2024-06-18T15:00:00.000+02:00[Europe/Prague]
         filters[0]: RewritePath=/order-ws/(?<segment>.*), /$\{segment}
 #        filters[0]: RewritePath=/user-ws/rest/api/orders/status/check,/rest/api/orders/status/check
+      routes[1]:
+        id: user-ws-permit-all-endpoints
+        uri: lb://user-ws
+        predicates[0]: Path=/user-ws/rest/api/users/**
+        predicates[1]: Method=GET,PUT,DELETE,POST
+        filters[0]: RewritePath=/user-ws/(?<segment>.*), /$\{segment}
+

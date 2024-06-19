@@ -1,7 +1,6 @@
-
 server:
-  port: ${PORT:0}
-#  port: ${PORT:8081}
+#  port: ${PORT:0}
+  port: ${PORT:8081}
 
 spring:
   profiles:
@@ -92,3 +91,7 @@ resilience4j:
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 5
 
+
+springdoc:
+  swagger-ui:
+    path: swagger-ui.html

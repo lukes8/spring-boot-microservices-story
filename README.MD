@@ -31,10 +31,12 @@ https://docs.axoniq.io/reference-guide/architecture-overview
 
 ```
 
-### Issues
+### Issues & ToDo
 ```
 - 403 forbidden with filters users API
 - Zipkin trace id propagation not work within inventory  
 
+#### ToDo
+- jwt auth and authorization via end point login and basic usedetails service 
 ```
 

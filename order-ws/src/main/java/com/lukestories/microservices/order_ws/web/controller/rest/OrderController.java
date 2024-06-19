@@ -4,6 +4,8 @@ import com.lukestories.microservices.order_ws.web.model.Order;
 import com.lukestories.microservices.order_ws.web.model.OrderItem;
 import com.lukestories.microservices.order_ws.web.service.OrderService;
 import com.netflix.discovery.converters.Auto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,7 +22,10 @@ public class OrderController {
     @Autowired private Environment environment;
 
     @GetMapping("/status/check")
-    public String status() {
+    @SecurityRequirement(name = "Bearer Authentication")
+    public String status(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        log.info("[check] header info: {}", header);
         String portNbr = environment.getProperty("local.server.port");
         return "[check] running on port " + portNbr;
     }

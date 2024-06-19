@@ -10,6 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,13 @@ public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired private Environment environment;
+
+    @GetMapping("/status/check")
+    public String status() {
+        String portNbr = environment.getProperty("local.server.port");
+        return "[check] running on port " + portNbr;
+    }
 
     @GetMapping("/{userId}")
     public UserDto get(@PathVariable Long userId) throws Exception {
