@@ -20,5 +20,6 @@ spring:
         uri: lb://order-ws:8081
         predicates[0]: Path=/order-ws/rest/api/orders/**
         predicates[1]: Method=GET
+        predicates[2]: After=2024-06-18T15:00:00.000+02:00[Europe/Prague]
         filters[0]: RewritePath=/order-ws/(?<segment>.*), /$\{segment}
 #        filters[0]: RewritePath=/user-ws/rest/api/orders/status/check,/rest/api/orders/status/check

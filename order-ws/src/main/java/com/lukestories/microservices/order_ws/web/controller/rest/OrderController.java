@@ -3,8 +3,10 @@ package com.lukestories.microservices.order_ws.web.controller.rest;
 import com.lukestories.microservices.order_ws.web.model.Order;
 import com.lukestories.microservices.order_ws.web.model.OrderItem;
 import com.lukestories.microservices.order_ws.web.service.OrderService;
+import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     @Autowired private OrderService orderService;
+    @Autowired private Environment environment;
 
     @GetMapping("/status/check")
     public String status() {
-        return "green world";
+        String portNbr = environment.getProperty("local.server.port");
+        return "[check] running on port " + portNbr;
     }
 
     @GetMapping("/status/check2")
