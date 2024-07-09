@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws;
+package com.lukestories.test;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +10,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
-public class BobStoryWithHashSetOfProductsTest {
+public class BobStoryWithHashSetOfProducts {
 
     @Test
     void createAndCheckProducts() {

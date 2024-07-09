@@ -1,28 +1,32 @@
-package com.lukestories.microservices.order_ws;
+package com.lukestories.test;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@ExtendWith(MockitoExtension.class)
-public class BobStoryWithStreamsTest {
+public class BobStoryWithStreams {
 
-    final Path path = Paths.get("src/test/java/com/lukestories/microservices/order_ws/data", "bob-friends.txt");
+    final Path path = Paths.get("src/test/java/com/lukestories/test/data", "bob-friends.txt");
 
     @Test
     void getSummaryOfBobFriendsAccordingGenderOrNames() throws IOException {
+        System.out.println("Current working directory: " + System.getProperty("user.dir"));
 
         System.out.println("Show me all Bob woman friends and total number of duplicity names for every friend");
         System.out.println(path.toUri());
@@ -47,8 +51,49 @@ public class BobStoryWithStreamsTest {
                     .collect(Collectors.groupingBy(c -> c[1], Collectors.toList()))
                     .forEach((k, arr) -> System.out.println(k + ": " + arr.size()));
         }
+    }
 
+    @Test
+    void getFirstNonRepeatedCharacterFromStringViaStreams() {
+        String text = "asdasgasfzgedhtjhd";
+        List<String> list = Arrays.stream(text.split("")).toList();
 
+        System.out.println("First non repeated character from string in modern way");
+        Optional<Map.Entry<String, Integer>> entry = list.stream().collect(Collectors.toMap((k) -> k,
+                (v) -> 1,
+                (integer, integer2) -> integer + 1,
+                LinkedHashMap::new)).entrySet().stream().filter(f -> f.getValue().equals(1)).findFirst();
+        entry.ifPresent(System.out::println);
+
+        System.out.println("First non repeated character from string in modern and more readable way");
+        list.stream().collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting())).entrySet().stream().filter(f -> f.getValue().equals(1L)).findFirst().map(Map.Entry::getKey).ifPresent(System.out::println);
+    }
+
+    @Test
+    void getSummaryOfBobFruitsGroupedByFirstCharAndSortedInDescendingOrder() {
+        List<String> lst = Arrays.asList("mango", "apple", "lemon", "pineapple", "banana", "Mandarin", "avocado", "blueberry");
+        Map<Character, List<String>> collect = lst.stream().collect(Collectors.groupingBy(k -> k.charAt(0)));
+
+        System.out.println(collect);
+        //TODO
+    }
+
+    @Test
+    void getSummaryOfBobAverageExpansesForParticularServicesSortedInDescendingOrder() {
+        List<String> services = Arrays.asList("cinema", "food", "traveling", "music", "sport", "books", "courses", "food", "traveling");
+        List<Integer> expanses = Arrays.asList(12, 11, 44, 22, 14, 7, 16, 22, 34);
+        Assert.isTrue(services.size() == expanses.size(), "sizes must be equal");
+        Map<String, List<Integer>> collect = IntStream.range(0, services.size()).boxed().collect(Collectors.groupingBy(services::get, LinkedHashMap::new, Collectors.mapping(i -> expanses.get(i), Collectors.toList())));
+        System.out.println("Summary of expanses for every service in natural flow [without aggregating summary function]");
+        collect.entrySet().forEach(System.out::println);
+
+        System.out.println("Summary of expanses for every service in aggregated flow [with aggregating summary function]");
+        IntStream.range(0, services.size()).boxed().collect(Collectors.groupingBy(services::get, Collectors.averagingInt(expanses::get))).entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toMap(
+                k -> k.getKey(),
+                v -> v.getValue(),
+                (v1, v2) -> v1,
+                LinkedHashMap::new
+        )).entrySet().forEach(System.out::println);
     }
 
     @Test
@@ -94,16 +139,6 @@ public class BobStoryWithStreamsTest {
                     )).forEach((k, v) -> System.out.println(String.format("[%s] = %s", k.getName(), v)));
         }
 
-
-//        // https://mvnrepository.com/artifact/io.micrometer/micrometer-observation
-//        implementation group: 'io.micrometer', name: 'micrometer-observation', version: '1.13.0'
-//// https://mvnrepository.com/artifact/io.micrometer/micrometer-tracing-bridge-brave
-//        implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave', version: '1.3.0'
-//// https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave
-//        implementation group: 'io.zipkin.reporter2', name: 'zipkin-reporter-brave', version: '3.4.0'
-//
-//    }
-
         System.out.println("Show me summary of Bob's friends grouped by gender and sorted by age in descending order");
         try (Stream<String> friends = Files.lines(path)) {
             friends.skip(1)
@@ -120,7 +155,7 @@ public class BobStoryWithStreamsTest {
                     })
                     .filter(Objects::nonNull)
                     .sorted(Comparator.comparing(Friend::getAge).reversed()) // only dogs are sorted
-                    .collect(Collectors.groupingBy (
+                    .collect(Collectors.groupingBy(
                             Friend::getGender, Collectors.toList()
                     ))
                     // Collection of group
@@ -209,11 +244,6 @@ public class BobStoryWithStreamsTest {
             return age;
         }
     }
-
-//    private static void log(String groupName, List<String[]> groupValues) {
-//        System.out.println(String.format("group[%s]: %s", groupName, ));
-//
-//    }
 
     public static void log(String key, String value) {
         System.out.println(String.format("[%s] = %s", key, value));
