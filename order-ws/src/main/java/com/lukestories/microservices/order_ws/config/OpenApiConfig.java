@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws.web;
+package com.lukestories.microservices.order_ws.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

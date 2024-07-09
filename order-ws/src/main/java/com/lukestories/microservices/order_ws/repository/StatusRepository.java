@@ -1,6 +1,6 @@
-package com.lukestories.microservices.order_ws.web.repository;
+package com.lukestories.microservices.order_ws.repository;
 
-import com.lukestories.microservices.order_ws.web.model.Status;
+import com.lukestories.microservices.order_ws.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

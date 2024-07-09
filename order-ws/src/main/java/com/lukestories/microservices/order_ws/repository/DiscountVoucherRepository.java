@@ -1,6 +1,6 @@
-package com.lukestories.microservices.order_ws.web.repository;
+package com.lukestories.microservices.order_ws.repository;
 
-import com.lukestories.microservices.order_ws.web.model.DiscountVoucher;
+import com.lukestories.microservices.order_ws.model.DiscountVoucher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DiscountVoucherRepository extends JpaRepository<DiscountVoucher, Long> {

@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws.web.model;
+package com.lukestories.microservices.order_ws.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

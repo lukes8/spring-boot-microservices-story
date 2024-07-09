@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws.web.model;
+package com.lukestories.microservices.order_ws.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -7,7 +7,8 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "ORDER_ITEM")
+@Entity
+@Table(name = "ORDER_ITEM")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor

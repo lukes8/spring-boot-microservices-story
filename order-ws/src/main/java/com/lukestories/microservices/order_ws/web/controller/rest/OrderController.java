@@ -1,9 +1,8 @@
 package com.lukestories.microservices.order_ws.web.controller.rest;
 
-import com.lukestories.microservices.order_ws.web.model.Order;
-import com.lukestories.microservices.order_ws.web.model.OrderItem;
-import com.lukestories.microservices.order_ws.web.service.OrderService;
-import com.netflix.discovery.converters.Auto;
+import com.lukestories.microservices.order_ws.model.Order;
+import com.lukestories.microservices.order_ws.model.OrderItem;
+import com.lukestories.microservices.order_ws.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -25,20 +24,16 @@ public class OrderController {
     @SecurityRequirement(name = "Bearer Authentication")
     public String status(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        log.info("[check] header info: {}", header);
+        if (header != null) {
+            log.info("[check] header info: {}", header);
+        }
         String portNbr = environment.getProperty("local.server.port");
         return "[check] running on port " + portNbr;
     }
 
-    @GetMapping("/status/check2")
-    public String status2() {
-        return "green world2";
-    }
-
     @GetMapping(value = "/{orderId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Order get(@PathVariable Long orderId) {
-        Order order = orderService.get(orderId);
-        return order;
+        return orderService.get(orderId);
     }
 
     @GetMapping(value = "/get-inventory/{productId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

@@ -1,5 +1,5 @@
 spring.application.name: api-gateway
-server.port: ${PORT:8082}
+server.port: ${PORT:8080}
 eureka.client.serviceUrl.defaultZone: http://localhost:${EUREKA_PORT:8010}/eureka
 
 spring.main.web-application-type: reactive
@@ -29,4 +29,9 @@ spring:
         predicates[0]: Path=/user-ws/rest/api/users/**
         predicates[1]: Method=GET,PUT,DELETE,POST
         filters[0]: RewritePath=/user-ws/(?<segment>.*), /$\{segment}
-
+      routes[2]:
+        id: inventory-ws-permit-all-endpoints
+        uri: lb://inventory-ws
+        predicates[0]: Path=/inventory-ws/rest/api/inventory/**
+        predicates[1]: Method=GET,PUT,DELETE,POST
+        filters[0]: RewritePath=/inventory-ws/(?<segment>.*), /$\{segment}

@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws.web.client;
+package com.lukestories.microservices.order_ws.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

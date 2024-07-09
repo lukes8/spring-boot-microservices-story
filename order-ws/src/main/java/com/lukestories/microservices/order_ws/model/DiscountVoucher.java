@@ -1,4 +1,4 @@
-package com.lukestories.microservices.order_ws.web.model;
+package com.lukestories.microservices.order_ws.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
@@ -22,6 +22,7 @@ public class DiscountVoucher {
     @ManyToMany(mappedBy = "vouchers")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Order> orders;
 
 }
