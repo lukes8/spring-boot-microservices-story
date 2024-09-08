@@ -2,6 +2,8 @@ package com.lukestories.test;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class BobWithThreadSafeAndAtomicOperation {
 
 	String reserveRoom() {
@@ -17,53 +19,47 @@ public class BobWithThreadSafeAndAtomicOperation {
 	@Test
 	public void thread_atomicInteger_error_handle() {
 
-		Bob bob = new Bob(10, 10);
+		Library library = new Library(10, 10);
 
 		for (int i = 0; i < 20; i++) {
 			System.out.println(i);
-			Thread t = new Thread(() -> {
-				bob.handle(this::reserveRoomWithException);
-			});
-			t.start();
+			Runnable bob = () -> library.handle(this::reserveRoomWithException);
+			new Thread(bob).start();
 		}
 	}
 
-	static class Bob {
+	static class Library {
 
 		private final int maxWaiting;
 		private final int maxErrors;
-		private int counterError = 0;
-		private int counterWaiting = 0;
+		private AtomicInteger counterError = new AtomicInteger(0);
+		private AtomicInteger counterWaiting = new AtomicInteger(0);
 
-		Bob(int maxErrors, int maxWaiting) {
+		Library(int maxErrors, int maxWaiting) {
 			this.maxErrors = maxErrors;
 			this.maxWaiting = maxWaiting;
 		}
 
 		public Object handle(BobMethod bobMethod) {
-
 			Object result = null;
-			synchronized (this) {
-
-				if (counterError < maxErrors) {
-					try {
-						result = bobMethod.process();
-					} catch (Exception e) {
-						counterError++;
-						System.out.println("failure " + counterError);
-					}
-				} else if (counterError >= maxErrors) {
-//						Thread.sleep(1000);
-						counterWaiting++;
-						System.out.println("waiting " + counterWaiting);
-					if (counterWaiting == maxWaiting) {
-						counterError = 0;
-						counterWaiting = 0;
-					}
+			if (counterError.get() < maxErrors) {
+				try {
+					result = bobMethod.process();
+				} catch (Exception e) {
+					counterError.incrementAndGet();
+					System.out.println("failure " + counterError);
 				}
-				return result;
+			} else if (counterError.get() >= maxErrors) {
+//						Thread.sleep(1000);
+					counterWaiting.incrementAndGet();
+					System.out.println("waiting " + counterWaiting.get());
+				if (counterWaiting.get() == maxWaiting) {
+					counterError.set(0);
+					counterWaiting.set(0);
+				}
 			}
-		}
+			return result;
+			}
 	}
 
 	@FunctionalInterface
