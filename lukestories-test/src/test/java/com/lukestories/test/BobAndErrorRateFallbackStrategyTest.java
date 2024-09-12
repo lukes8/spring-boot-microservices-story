@@ -2,6 +2,8 @@ package com.lukestories.test;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -10,12 +12,12 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BobAndErrorRateFallbackStrategy {
+class BobAndErrorRateFallbackStrategyTest {
 
 	@Test
 	void fallback_strategy_circuit_breaker_dontCallFn10TimesWhenOccur10FailsInSlidingWindow() throws InterruptedException {
 		ErrorRateLimiter limiter = new ErrorRateLimiter();
-		Supplier<Object> s1 = () -> limiter.someOtherFunc();
+		Supplier<Object> s1 = limiter::someOtherFunc;
 
 		// Create a thread pool with 20 threads
 		ExecutorService executor = Executors.newFixedThreadPool(20);
@@ -42,23 +44,20 @@ class BobAndErrorRateFallbackStrategy {
 		assertTrue(totalCallsMade.get() + totalCallsSkipped.get() <= 100, "Total calls should not exceed the number of submitted tasks");
 	}
 
-	public class ErrorRateLimiter {
+	public static class ErrorRateLimiter {
 
 		private static final int WINDOW_SIZE = 20;
 		private static final int ERROR_THRESHOLD = 10;
 		private static final int SKIP_COUNT = 10;
 
-		private AtomicInteger totalCalls = new AtomicInteger(0);
-		private AtomicInteger errorCount = new AtomicInteger(0);
-		private AtomicInteger successCount = new AtomicInteger(0);
-		private AtomicInteger skipCallCount = new AtomicInteger(0);
+		private final Queue<Boolean> errorQueue = new LinkedList<>();
+		private final AtomicInteger skipCallCount = new AtomicInteger(0);
 		private volatile boolean skipCalls = false;
 
 		public void handle(Supplier<Object> customMethod) {
 			if (skipCalls && skipCallCount.get() < SKIP_COUNT) {
 				// Skip function calls while in skip mode
 				skipCallCount.incrementAndGet();
-				System.out.println("waiting");
 				return;
 			}
 
@@ -68,38 +67,39 @@ class BobAndErrorRateFallbackStrategy {
 				skipCallCount.set(0);
 			}
 
-			totalCalls.incrementAndGet();
-
+			boolean isError = false;
 			try {
 				customMethod.get();  // Invoke the actual function
-				successCount.incrementAndGet();
 			} catch (Exception e) {
-				errorCount.incrementAndGet();
+				isError = true;
 			}
 
+			// Add the result to the queue
+			errorQueue.add(isError);
+
+			// Remove the oldest result if the queue exceeds the window size
+			if (errorQueue.size() > WINDOW_SIZE) {
+				errorQueue.poll();
+			}
+
+			// Calculate the number of errors in the queue
+			long errorCount = errorQueue.stream().filter(result -> result).count();
+
 			// Check if the error threshold is exceeded
-			if (errorCount.get() >= ERROR_THRESHOLD) {
+			if (errorCount >= ERROR_THRESHOLD) {
 				skipCalls = true;  // Trigger skipping the next SKIP_COUNT calls
 			}
 
 			summary();
+		}
 
-			// Automatically reset error and success counts every WINDOW_SIZE calls
-			if (totalCalls.get() % WINDOW_SIZE == 0) {
-				reset();
-			}
+		public boolean shouldSkipCall() {
+			return skipCalls;
 		}
 
 		private void summary() {
-			System.out.println(totalCalls.get() % WINDOW_SIZE + "th call");
-			System.out.println(errorCount.get() + " errors");
-			System.out.println(successCount.get() + " success");
-		}
-
-		// Resets error and success counters
-		private void reset() {
-			errorCount.set(0);
-			successCount.set(0);
+			System.out.println(errorQueue.stream().filter(f -> !f).count() + " success");
+			System.out.println(errorQueue.stream().filter(f -> f).count() + " errors");
 		}
 
 		public Object someOtherFunc() {
@@ -107,10 +107,6 @@ class BobAndErrorRateFallbackStrategy {
 				throw new RuntimeException("Simulated failure");
 			}
 			return "Success";
-		}
-
-		public boolean shouldSkipCall() {
-			return skipCalls;
 		}
 	}
 }
